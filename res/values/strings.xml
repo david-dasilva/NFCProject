@@ -4,6 +4,6 @@
     <string name="app_name">TagNFC</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-   <string name="nfc_reading">Reading NFC&amp;#133;</string>
+   <string name="nfc_reading">Reading NFC&amp;#133;</string><string name="tag_content_title">Contenu du tag</string>
     
 </resources>
