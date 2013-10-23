@@ -137,8 +137,8 @@ public class NFCReader extends Activity {
 					
 					message = message.replace(PREFIX, "");
 					
-					//TextView textV = (TextView)findViewById()
-					
+					TextView textV = (TextView)findViewById(R.id.text_nfc_reading);
+					textV.setText(message);					
 					
 					
 					 //Utiliser ?
