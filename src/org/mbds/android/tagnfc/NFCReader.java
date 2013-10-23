@@ -43,7 +43,7 @@ public class NFCReader extends Activity {
 	public static final int REQUEST_CODE = 1000;
 
 	public static final String MESSAGE = "I'm a message";
-	
+
 	public static final String PREFIX = "http://www.mbds-fr.org";
 	
 	
@@ -132,20 +132,24 @@ public class NFCReader extends Activity {
 			NdefMessage[] msgs;
 			if (rawMsgs != null) {
 				msgs = new NdefMessage[rawMsgs.length];
+
 				for (int i = 0; i < rawMsgs.length; i++) {
 					msgs[i] = (NdefMessage) rawMsgs[i];
 					NdefRecord record = msgs[i].getRecords()[i];
-					byte[] idRec = record.getId();
-					short tnf = record.getTnf();
-					byte[] type = record.getType();
-					String message = record.getPayload().toString();
-					
-					message = message.replace(PREFIX, "");
-					
-					TextView textV = (TextView)findViewById(R.id.text_nfc_reading);
+					//byte[] idRec = record.getId();
+					//short tnf = record.getTnf();
+					//byte[] type = record.getType();
+					String message = new String(record.getPayload());
+
+					//message = message.replace(PREFIX, "");
+                    message = message.substring(13); // <---- sale
+
+
+                    Log.d("TAGNFC", "message = "+message);
+					TextView textV = (TextView)findViewById(R.id.txtTag);
 					textV.setText(message);					
 					
-					
+					Log.d("TAGNFC", "Tag trouvé!");
 					 //Utiliser ?
 					//...
 
@@ -191,7 +195,7 @@ public class NFCReader extends Activity {
 			// No data has been read
 			Toast.makeText(getApplicationContext(), "NFC Reading has failed...", Toast.LENGTH_SHORT).show();
 		}
-		finish();
+		//finish();
 	}
 
 	@Override
