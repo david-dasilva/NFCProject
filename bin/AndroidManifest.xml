@@ -21,10 +21,10 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
                 
-                
-
-                
             </intent-filter>
+            
+        </activity>
+        <activity android:name="NFCReader">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
 			    <category android:name="android.intent.category.DEFAULT" />
@@ -32,8 +32,6 @@
 			                android:pathPrefix="/application/"
 			                android:scheme="http" />
             </intent-filter>
-        </activity>
-        <activity android:name="NFCReader">
             
         </activity>
     </application>
