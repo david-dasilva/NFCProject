@@ -38,6 +38,8 @@ public class NFCReader extends Activity {
 
 	public static final String MESSAGE = "I'm a message";
 	
+	public static final String PREFIX = "http://www.mbds-fr.org";
+	
 	
 	private PendingIntent mPendingIntent;
 	private IntentFilter ndefDetected;
@@ -131,15 +133,22 @@ public class NFCReader extends Activity {
 					short tnf = record.getTnf();
 					byte[] type = record.getType();
 					String message = record.getPayload().toString();
+					
+					message = message.replace(PREFIX, "");
+					
+					//TextView textV = (TextView)findViewById()
+					
+					
+					
 					 //Utiliser ?
 					//...
 					//Lancer le navigateur si type URI ?
-		  			if (Arrays.equals(type, NdefRecord.RTD_URI)) {
+		  			/*if (Arrays.equals(type, NdefRecord.RTD_URI)) {
 		        				Uri uri = record.toUri();
 		        				Intent intentNew = new Intent(Intent.ACTION_VIEW);
 		        				intentNew.setData(uri);
 		        				startActivity(intentNew);
-					}
+					}*/
 				}
 			} else {
 				//Tag de type inonnu
