@@ -31,14 +31,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="Share"
-            android:text="Button" />
+            android:text="Share" />
 
         <Button
             android:id="@+id/clear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="Clear"
-            android:text="Button" />
+            android:text="Clear" />
 
     </LinearLayout>
 
