@@ -42,7 +42,7 @@ public class NFCReader extends Activity {
 
 	public static final int REQUEST_CODE = 1000;
 
-	public static final String MESSAGE = "I'm a message";
+	public static final String MESSAGE = "I'm a message!";
 
 	public static final String PREFIX = "http://www.mbds-fr.org";
 	
@@ -173,11 +173,26 @@ public class NFCReader extends Activity {
 			progressTime = 0l;
 			return true;
 		}
+
+
+    public void onNewIntent(Intent intent) {
+        // When an NFC tag is being written, call the write tag function when an intent is
+        // received that says the tag is within range of the device and ready to be written to
+        Tag tag = intent.getParcelableExtra(PREFIX);
+        String nfcMessage = intent.getStringExtra("MESSAGE");
+
+        if(nfcMessage != null) {
+            NFCReader.writeTag(this, tag, nfcMessage);
+        }
+    }
+
+
+
+
 	@Override
 	public void onResume() {
 		super.onResume();
-		// Waiting for the reading
-//		SyncTask progress = (SyncTask) new SyncTask().execute();
+
 		mPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this,
 				getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 		// Intent filters 
@@ -190,12 +205,14 @@ public class NFCReader extends Activity {
 		((TextView) findViewById(R.id.text_nfc_reading))
 				.setText("Processing...");
 		Intent intent = getIntent();
+
+
+
 		if (!resolveIntent(intent)) {
 //			progress.cancel(true);
 			// No data has been read
 			Toast.makeText(getApplicationContext(), "NFC Reading has failed...", Toast.LENGTH_SHORT).show();
 		}
-		//finish();
 	}
 
 	@Override
