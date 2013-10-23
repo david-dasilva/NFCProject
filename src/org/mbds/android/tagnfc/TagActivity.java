@@ -28,7 +28,7 @@ public class TagActivity extends Activity {
 	public void Clear(View view) {
 		
 		EditText mEdit   = (EditText)findViewById(R.id.message);
-		mEdit.setText("vide");
+		mEdit.setText("");
 	     // Kabloey
 	 }
 	
