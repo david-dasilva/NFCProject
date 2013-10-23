@@ -23,6 +23,7 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -133,6 +134,7 @@ public class NFCReader extends Activity {
 					String message = record.getPayload().toString();
 					 //Utiliser ?
 					//...
+
 					//Lancer le navigateur si type URI ?
 		  			if (Arrays.equals(type, NdefRecord.RTD_URI)) {
 		        				Uri uri = record.toUri();
