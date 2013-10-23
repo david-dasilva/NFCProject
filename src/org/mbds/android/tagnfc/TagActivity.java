@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 
 public class TagActivity extends Activity {
@@ -14,7 +16,14 @@ public class TagActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		
+		// Ajout du listener sur le bouton share
+        final Button btnShare = (Button)findViewById(R.id.share);
+        btnShare.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Share();
+            }
+        });
 		
 	}
 
@@ -29,13 +38,14 @@ public class TagActivity extends Activity {
 		
 		EditText mEdit   = (EditText)findViewById(R.id.message);
 		mEdit.setText("");
-	     // Kabloey
 	 }
 	
-	public void Share(View view) {
-	     // Kabloey
-		 // Dans le onClick du bouton "SHARE"
-        final String message = "xxxxxx";// RÈcupÈrer le texte saisi par l'utilisateur
+	public void Share() {
+
+        // r√©cuperation du texte entr√© par l'utilisateur
+        EditText messageField = (EditText)findViewById(R.id.message);
+        final String message = messageField.getText().toString();
+
         Bundle bundle = new Bundle();
         bundle.putString(NFCReader.MESSAGE, message);
         Intent nfcReader = new Intent(getBaseContext(), NFCReader.class);

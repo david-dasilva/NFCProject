@@ -30,7 +30,6 @@
             android:id="@+id/share"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="Share"
             android:text="Share" />
 
         <Button
