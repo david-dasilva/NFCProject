@@ -95,7 +95,7 @@ public class NFCReader extends Activity {
 		setContentView(R.layout.nfcreading);
 		
 
-        // Dans le onCreate de l'activité
+        // Dans le onCreate de l'activitÃ©
         try {
             Bundle bundle = this.getIntent().getExtras();
             message = bundle.getString(MESSAGE);
@@ -117,7 +117,7 @@ public class NFCReader extends Activity {
 			boolean isWritable = ndef.isWritable();
 			boolean canMakeReadOnly = ndef.canMakeReadOnly();
 
-			 //Récupération des messages
+			 //RÃ©cupÃ©ration des messages
 			Parcelable[] rawMsgs = 
 		                            intent.getParcelableArrayExtra(
 		                                         NfcAdapter.EXTRA_NDEF_MESSAGES);
