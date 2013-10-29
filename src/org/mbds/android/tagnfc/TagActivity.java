@@ -37,6 +37,7 @@ public class TagActivity extends FragmentActivity {
 	NfcAdapter nfcAdapter;
 	public static NdefMessage message = null;
 	private IntentFilter ndefDetected;
+    private static NfcDialogFragment dialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,7 @@ public class TagActivity extends FragmentActivity {
         }
 
         Log.d(TAG, "Click btn Share, message = "+message.toString());
-        NfcDialogFragment dialog = new NfcDialogFragment();
+        dialog = new NfcDialogFragment();
         FragmentManager fm = getSupportFragmentManager();
 
         dialog.show(fm, "fragment_nfc_dialog");
@@ -236,6 +237,7 @@ public class TagActivity extends FragmentActivity {
                 Log.d(TAG, "pre write");
 				ndef.writeNdefMessage(message);
                 Log.d(TAG, "post write");
+                dialog.dismiss();
 				ndef.close();
 
                 writeMode = false;
