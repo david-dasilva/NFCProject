@@ -21,13 +21,13 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.os.Parcelable;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+//import android.support.v4.app.FragmentActivity;
+//import android.support.v4.app.FragmentManager;
 
 
 import java.io.IOException;
 
-public class TagActivity extends FragmentActivity {
+public class TagActivity extends Activity {
 
     public static final String TAG = "TAGNFC";
 	public static final String MESSAGE = "I'm a message!";
@@ -69,7 +69,7 @@ public class TagActivity extends FragmentActivity {
 
         Log.d(TAG, "Click btn Share, message = "+message.toString());
         NfcDialogFragment dialog = new NfcDialogFragment();
-        dialog.;
+        //dialog.;
     }
 
 
