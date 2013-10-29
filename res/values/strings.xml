@@ -4,6 +4,9 @@
     <string name="app_name">TagNFC</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-   <string name="nfc_reading">Reading NFC&amp;#133;</string><string name="tag_content_title">Contenu du tag</string>
+    <string name="nfc_reading">Reading NFC&amp;#133;</string>
+    <string name="tag_content_title">Contenu du tag</string>
+    <string name="waiting_tag">Approchez un tag NFC/Téléphone</string>
+    <string name="cancel">Annuler</string>
     
 </resources>

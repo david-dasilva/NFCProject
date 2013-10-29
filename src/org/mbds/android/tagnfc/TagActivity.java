@@ -1,5 +1,6 @@
 package org.mbds.android.tagnfc;
 
+import android.app.DialogFragment;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -20,12 +21,13 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.os.Parcelable;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 
-public class TagActivity extends Activity {
+public class TagActivity extends FragmentActivity {
 
     public static final String TAG = "TAGNFC";
 	public static final String MESSAGE = "I'm a message!";
@@ -33,7 +35,6 @@ public class TagActivity extends Activity {
     private static boolean writeMode = false;
 
 	NfcAdapter nfcAdapter;
-	PendingIntent pendingIntent;
 	public static NdefMessage message = null;
 	private IntentFilter ndefDetected;
 
@@ -47,21 +48,11 @@ public class TagActivity extends Activity {
 		btnShare.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-
-
                 share();
-
-
 			}
 		});
 
-		//if(message == null)
-		//{
 		nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-		//pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this,
-		//		getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-		//}
-
 	}
 
 
@@ -73,11 +64,12 @@ public class TagActivity extends Activity {
 
         if(!texte.isEmpty()){
             message = createNdefMessage(texte);
-
             nfcAdapter.setNdefPushMessage(message, this);
         }
 
         Log.d(TAG, "Click btn Share, message = "+message.toString());
+        NfcDialogFragment dialog = new NfcDialogFragment();
+        dialog.;
     }
 
 
@@ -198,7 +190,7 @@ public class TagActivity extends Activity {
                         readIntent.putExtras(bundle);
                         readIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         Log.d(TAG,"starting activity ReaderActivity");
-                        startActivityForResult(readIntent,0);
+                        startActivityForResult(readIntent, 0);
                         finish();
 
                     }
