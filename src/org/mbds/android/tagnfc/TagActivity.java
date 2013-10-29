@@ -1,6 +1,7 @@
 package org.mbds.android.tagnfc;
 
 
+import android.app.DialogFragment;
 import android.net.Uri;
 import android.nfc.*;
 import android.nfc.tech.*;
@@ -48,12 +49,7 @@ public class TagActivity extends FragmentActivity {
 		});
 
 		nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-		
-	     android.app.FragmentManager fm = getFragmentManager();
-	        FragmentTest testDialog = new FragmentTest();
-	        testDialog.setRetainInstance(true);
-	        testDialog.show(fm, "un fragment");
-	 
+
 		
 	}
 
@@ -72,9 +68,11 @@ public class TagActivity extends FragmentActivity {
             nfcAdapter.setNdefPushMessage(message, this);
 
             // Affichage du dialogue
-            dialog = new NfcDialogFragment();
-            FragmentManager fm = getSupportFragmentManager();
-            dialog.show(fm, "fragment_nfc_dialog");
+            android.app.FragmentManager fm = getFragmentManager();
+            NfcDialogFragment dialog = new NfcDialogFragment();
+            dialog.setRetainInstance(true);
+            dialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
+            dialog.show(fm, "un fragment");
         }
     }
 
@@ -288,9 +286,11 @@ public class TagActivity extends FragmentActivity {
         nfcAdapter.setNdefPushMessage(message, this);
 
         // Affichage du dialogue
-        dialog = new NfcDialogFragment();
-        FragmentManager fm = getSupportFragmentManager();
-        dialog.show(fm, "fragment_nfc_dialog");
+        android.app.FragmentManager fm = getFragmentManager();
+        NfcDialogFragment dialog = new NfcDialogFragment();
+        dialog.setRetainInstance(true);
+        dialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
+        dialog.show(fm, "un fragment");
 		
 	}
 
