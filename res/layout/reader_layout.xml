@@ -17,15 +17,14 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Message : "
-            android:id="@+id/tvMessage"
+            android:id="@+id/tv2Message"
             />
     
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/tvmessage"
-            android:id="@+id/tv2Message"
+            android:id="@+id/tvMessage"
             />
                 </LinearLayout>
                
