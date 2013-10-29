@@ -8,8 +8,9 @@ import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.os.Parcelable;
 
-import java.io.UnsupportedEncodingException;
-
+/**
+ * Permet d'extraire facilement les données utiles d'un tag NFC
+ */
 public class TagNfc{
 	byte[] id;
 	String[] technologies;

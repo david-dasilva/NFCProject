@@ -1,44 +1,37 @@
 package org.mbds.android.tagnfc;
 
-import android.app.DialogFragment;
+
 import android.net.Uri;
-import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.nfc.tech.Ndef;
-import android.nfc.tech.NdefFormatable;
+import android.nfc.*;
+import android.nfc.tech.*;
 import android.os.Bundle;
-import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.View;
+import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.widget.Toast;
-
-
 import java.io.IOException;
 
+
+/**
+ * Activité principale de notre application,
+ * Elle reçoit les evenements NFC et décide quoi en faire.
+ */
 public class TagActivity extends FragmentActivity {
 
     public static final String TAG = "TAGNFC";
-	public static final String MESSAGE = "I'm a message!";
 	public static final String PREFIX = "http://www.mbds-fr.org/";
     private static boolean writeMode = false;
-
-	NfcAdapter nfcAdapter;
 	public static NdefMessage message = null;
-	private IntentFilter ndefDetected;
     private static NfcDialogFragment dialog;
+    NfcAdapter nfcAdapter;
+    IntentFilter ndefDetected;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +58,9 @@ public class TagActivity extends FragmentActivity {
 	}
 
 
+    /**
+     * Récupère le texte entré par l'utilisateur et affiche un dialogue
+     */
     private void share(){
         writeMode = true;
 
@@ -74,13 +70,12 @@ public class TagActivity extends FragmentActivity {
         if(!texte.isEmpty()){
             message = createNdefMessage(texte);
             nfcAdapter.setNdefPushMessage(message, this);
+
+            // Affichage du dialogue
+            dialog = new NfcDialogFragment();
+            FragmentManager fm = getSupportFragmentManager();
+            dialog.show(fm, "fragment_nfc_dialog");
         }
-
-        Log.d(TAG, "Click btn Share, message = "+message.toString());
-        dialog = new NfcDialogFragment();
-        FragmentManager fm = getSupportFragmentManager();
-
-        dialog.show(fm, "fragment_nfc_dialog");
     }
 
 
@@ -108,11 +103,7 @@ public class TagActivity extends FragmentActivity {
 		try {
 			if (nfcAdapter == null)
 				nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-			/*
-			 * pendingIntent = PendingIntent.getActivity(this, 0, new
-			 * Intent(this,
-			 * getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-			 */
+
 			// Intent filters
 			ndefDetected = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
 			Intent intent = getIntent();
@@ -124,34 +115,17 @@ public class TagActivity extends FragmentActivity {
 
 	}
 
-	public void onPause() {
-		super.onPause();
-		/* nfcAdapter.disableForegroundDispatch(this); */
-	}
-
-	public void onNewIntent(Intent intent) {
-		// Méthode qui va traiter le contenu
-		/*String action = intent.getAction();
-		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
-				|| NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)
-				|| NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
-			resolveIntent(intent);
-		}*/
-	}
-
 	public void resolveIntent(Intent intent) {
 
         Log.d(TAG, "Detection de tag!");
 		// Infos sur le tag
 		Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-
         if(writeMode){
             // Mode écriture
             Log.d(TAG, "mode ecriture");
 
             try{
-                //////
                 writeTag(message, tag);
                 writeMode = false;
                 Toast toast = Toast.makeText(getApplicationContext(), R.string.tag_success, Toast.LENGTH_LONG);
@@ -162,36 +136,31 @@ public class TagActivity extends FragmentActivity {
 
         } else {
             // Mode lecture
-
             Log.d(TAG, "mode lecture");
 
             if (tag != null){
-
                 TagNfc tagnfc = new TagNfc(intent);
                 // Récupération des messages
                 Parcelable[] rawMsgs = tagnfc.getRawMsgs();
                 NdefMessage[] msgs;
 
                 if (rawMsgs != null) {
-
                     // Il y a des messages!
 
                     msgs = new NdefMessage[rawMsgs.length];
                     for (int i = 0; i < rawMsgs.length; i++) {
                         msgs[i] = (NdefMessage) rawMsgs[i];
                         NdefRecord record = msgs[i].getRecords()[i];
-                        byte[] idRec = record.getId();
-                        short tnf = record.getTnf();
-                        byte[] type = record.getType();
 
                         // récupération du message sous forme de string
-                        String message = "";//new String(record.getPayload());
+                        String message = "";
                         Uri uri = record.toUri();
+                        // Suppression du préfix
                         message += uri.toString().replace(PREFIX,"")+" ";
-                        //message = message.substring(13); // <---- sale
 
-                        Log.d(TAG, "message = " + message);
-
+                        /*
+                         * Création d'un intent pour l'activité de lecture et passage des parametres
+                         */
                         Intent readIntent = new Intent(getBaseContext(), ReaderActivity.class);
                         Bundle bundle = new Bundle();
                         bundle.putString("message", message);
@@ -202,10 +171,10 @@ public class TagActivity extends FragmentActivity {
 
                         readIntent.putExtras(bundle);
                         readIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                        Log.d(TAG,"starting activity ReaderActivity");
+
+                        // Lancement de l'activité
                         startActivityForResult(readIntent, 0);
                         finish();
-
                     }
                 }
             }
@@ -213,6 +182,11 @@ public class TagActivity extends FragmentActivity {
 	}
 
 
+    /**
+     * Crée un message Ndef en utilisant le prefix
+     * @param text
+     * @return
+     */
 	public NdefMessage createNdefMessage(String text) {
 
 		// Message de type URI
@@ -220,33 +194,33 @@ public class TagActivity extends FragmentActivity {
 		return msg;
 	}
 
+
+    /**
+     * Ecriture du tag
+     * @param message
+     * @param tag
+     * @return
+     */
 	public static boolean writeTag(NdefMessage message, Tag tag) {
-		try {
 
-            Log.d(TAG, "debut writeTag");
-            if(message == null){
-                Log.e(TAG, "message null");
-            }
+        try {
+
 			int size = message.toByteArray().length;
-
-            Log.d(TAG, "writeTag message = "+message.toString());
-
 			Ndef ndef = Ndef.get(tag);
-
-            Log.d(TAG, "writeTag tag ="+tag.getId());
 
 			if (ndef != null) {
 				ndef.connect();
-                Log.d(TAG, "connected");
+
 				if (!ndef.isWritable()) {
 					return false;
 				}
 				if (ndef.getMaxSize() < size) {
 					return false;
 				}
-                Log.d(TAG, "pre write");
+
 				ndef.writeNdefMessage(message);
-                Log.d(TAG, "post write");
+
+                // On cache le dialogue demandant a l'utilisateur d'approcher un Tag
                 dialog.dismiss();
 				ndef.close();
 
@@ -278,35 +252,45 @@ public class TagActivity extends FragmentActivity {
 			e.printStackTrace();
 		}
         writeMode = false;
-
         return false;
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.tag, menu);
-		return true;
-	}
 
+    /**
+     * Efface le champ texte au retour de l'activité de lecture
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         Log.d(TAG, "retour a l'activité principale");
-        clear(null);
+        clear();
     }
 
-	public void clear(View view) {
+
+    /**
+     * Efface le champ texte
+     */
+	public void clear() {
         Log.d(TAG, "clear field");
 		EditText mEdit = (EditText) findViewById(R.id.message);
 		mEdit.setText("");
 	}
-	
+
+
+    /**
+     * Efface les données du tag, mais insere le préfix
+     */
 	public void resettag(View view)
 	{
         writeMode = true;
         message = createNdefMessage("");
         nfcAdapter.setNdefPushMessage(message, this);
-        Log.d(TAG, "Click btn ResetTag, message = "+message.toString());
-        NfcDialogFragment dialog = new NfcDialogFragment();
+
+        // Affichage du dialogue
+        dialog = new NfcDialogFragment();
+        FragmentManager fm = getSupportFragmentManager();
+        dialog.show(fm, "fragment_nfc_dialog");
 		
 	}
 

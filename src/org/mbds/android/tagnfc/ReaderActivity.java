@@ -10,15 +10,14 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 /**
- * Created by shepard on 29/10/13.
+ * Activité affichant les messages stocké dans le tag NFC
+ * Les informations utiles sont transmises par l'activité mère via le Bundle
+ * Il est possible revenir en arrière en secouant le téléphone
  */
 @SuppressWarnings("deprecation")
 public class ReaderActivity extends Activity implements SensorListener {
 
-	private IntentFilter ndefDetected;
-
 	// Gestion du shaker
-
 	private static final int SHAKE_THRESHOLD = 5000;
 	private SensorManager sensorMgr = null;
 
@@ -71,6 +70,11 @@ public class ReaderActivity extends Activity implements SensorListener {
 
 	}
 
+    /**
+     * Ferme l'activité et reviens à l'activité principale lorsque l'on secoue le téléphone
+     * @param sensor
+     * @param values
+     */
 	@SuppressWarnings("deprecation")
 	public void onSensorChanged(int sensor, float[] values) {
 		if (sensor == SensorManager.SENSOR_ACCELEROMETER) {
