@@ -147,7 +147,7 @@ public class TagActivity extends FragmentActivity {
                 //////
                 writeTag(message, tag);
                 writeMode = false;
-                Toast toast = Toast.makeText(getApplicationContext(), R.string.tag_success, Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(getApplicationContext(), R.string.tag_success, Toast.LENGTH_LONG);
                 toast.show();
             } catch(Exception e){
                 e.printStackTrace();
