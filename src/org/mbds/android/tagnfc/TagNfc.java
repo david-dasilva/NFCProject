@@ -8,6 +8,8 @@ import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.os.Parcelable;
 
+import java.io.UnsupportedEncodingException;
+
 public class TagNfc{
 	byte[] id;
 	String[] technologies;
@@ -19,7 +21,6 @@ public class TagNfc{
 	NdefMessage[] msgs;
 	
 	public TagNfc(Intent intent) {
-		super();
 
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 		this.id = tag.getId();
@@ -52,13 +53,25 @@ public class TagNfc{
 	}
 
 
-	public byte[] getId() {
-		return id;
+	public String getId() {
+
+        String idtxt = "";
+        idtxt =  bytesToHex(id);
+        return idtxt;
 	}
 
 
-	public String[] getTechnologies() {
-		return technologies;
+	public String getTechnologies() {
+
+        String techList = "";
+        for(int k=0; k < technologies.length; k++ ){
+            techList += technologies[k];
+            if(k < (technologies.length -1) ){
+                techList += " / ";
+            }
+        }
+
+        return techList;
 	}
 
 
@@ -72,13 +85,19 @@ public class TagNfc{
 	}
 
 
-	public boolean isWritable() {
-		return isWritable;
+	public String isWritable() {
+		if(isWritable)
+            return "Oui";
+        else
+            return "Non";
 	}
 
 
-	public boolean isCanMakeReadOnly() {
-		return canMakeReadOnly;
+	public String isCanMakeReadOnly() {
+        if(canMakeReadOnly)
+		    return "Oui";
+        else
+            return "Non";
 	}
 
 
@@ -90,6 +109,16 @@ public class TagNfc{
 	public NdefMessage[] getMsgs() {
 		return msgs;
 	}
-	
-	
+
+    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        int v;
+        for ( int j = 0; j < bytes.length; j++ ) {
+            v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
 }

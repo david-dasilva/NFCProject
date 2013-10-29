@@ -23,17 +23,18 @@ import android.os.Parcelable;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 
 public class TagActivity extends Activity {
 
-
+    public static final String TAG = "TAGNFC";
 	public static final String MESSAGE = "I'm a message!";
 	public static final String PREFIX = "http://www.mbds-fr.org";
     private static boolean writeMode = false;
 
 	NfcAdapter nfcAdapter;
 	PendingIntent pendingIntent;
-	NdefMessage message = null;
+	public static NdefMessage message = null;
 	private IntentFilter ndefDetected;
 
 	@Override
@@ -46,16 +47,23 @@ public class TagActivity extends Activity {
 		btnShare.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				share();
+
+                writeMode = true;
+
+                EditText messageField = (EditText) findViewById(R.id.message);
+                final String texte = messageField.getText().toString();
+                message = createNdefMessage(texte);
+
+                Log.d(TAG, "Click btn Share, message = "+message.toString());
 			}
 		});
 
-		if(message == null)
-		{
+		//if(message == null)
+		//{
 		nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-		pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this,
-				getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-		}
+		//pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this,
+		//		getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+		//}
 
 	}
 
@@ -94,7 +102,7 @@ public class TagActivity extends Activity {
 			// Lecture/Ecriture...
 			resolveIntent(intent);
 		} catch (Exception e) {
-			Log.d("TAGNFC", e.getStackTrace().toString());
+			e.printStackTrace();
 		}
 
 	}
@@ -106,121 +114,124 @@ public class TagActivity extends Activity {
 
 	public void onNewIntent(Intent intent) {
 		// Méthode qui va traiter le contenu
-		String action = intent.getAction();
+		/*String action = intent.getAction();
 		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
 				|| NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)
 				|| NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
 			resolveIntent(intent);
-		}
+		}*/
 	}
 
 	public void resolveIntent(Intent intent) {
+
+        Log.d(TAG, "Detection de tag!");
 		// Infos sur le tag
 		Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
-		byte[] id = tag.getId();
-		String[] technologies = tag.getTechList();
-		int content = tag.describeContents();
-		Ndef ndef = Ndef.get(tag);
-		boolean isWritable = ndef.isWritable();
-		boolean canMakeReadOnly = ndef.canMakeReadOnly();
 
 
         if(writeMode){
             // Mode écriture
-            // TODO : appeller l'activité d'écriture ici
+            Log.d(TAG, "mode ecriture");
+
+            try{
+                writeTag(message, tag);
+                writeMode = false;
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+
         } else {
             // Mode lecture
 
-            // Récupération des messages
-            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            NdefMessage[] msgs;
+            Log.d(TAG, "mode lecture");
 
-            if (rawMsgs != null) {
+            if (tag != null){
 
-                // Il y a des messages!
+                TagNfc tagnfc = new TagNfc(intent);
+                // Récupération des messages
+                Parcelable[] rawMsgs = tagnfc.getRawMsgs();
+                NdefMessage[] msgs;
 
-                msgs = new NdefMessage[rawMsgs.length];
-                for (int i = 0; i < rawMsgs.length; i++) {
-                    msgs[i] = (NdefMessage) rawMsgs[i];
-                    NdefRecord record = msgs[i].getRecords()[i];
-                    byte[] idRec = record.getId();
-                    short tnf = record.getTnf();
-                    byte[] type = record.getType();
+                if (rawMsgs != null) {
 
-                    // récupération du message sous forme de string
-                    String message = new String(record.getPayload());
+                    // Il y a des messages!
 
-                    message = message.substring(13); // <---- sale
+                    msgs = new NdefMessage[rawMsgs.length];
+                    for (int i = 0; i < rawMsgs.length; i++) {
+                        msgs[i] = (NdefMessage) rawMsgs[i];
+                        NdefRecord record = msgs[i].getRecords()[i];
+                        byte[] idRec = record.getId();
+                        short tnf = record.getTnf();
+                        byte[] type = record.getType();
 
-                    Log.d("TAGNFC", "message = " + message);
+                        // récupération du message sous forme de string
+                        String message = new String(record.getPayload());
 
-                    // TODO : Appeler l'activité Reader et lui passer le message en parametres
+                        message = message.substring(13); // <---- sale
 
+                        Log.d(TAG, "message = " + message);
 
-                    Intent readIntent = new Intent(getBaseContext(), ReaderActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("message", message);
-                    readIntent.putExtras(bundle);
+                        Intent readIntent = new Intent(getBaseContext(), ReaderActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("message", message);
+                        bundle.putString("id", tagnfc.getId());
+                        bundle.putString("technologies", tagnfc.getTechnologies());
+                        bundle.putString("isWritable", tagnfc.isWritable());
+                        bundle.putString("canMakeReadOnly", tagnfc.isCanMakeReadOnly());
 
-                    startActivity(readIntent);
+                        readIntent.putExtras(bundle);
+                        readIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        Log.d(TAG,"starting activity ReaderActivity");
+                        startActivity(readIntent);
+                        finish();
 
-
+                    }
                 }
             }
-
         }
-
-
-
-
-		 else {
-			// Tag de type inonnu
-			byte[] empty = new byte[] {};
-			NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty,
-					empty, empty);
-			NdefMessage msg = new NdefMessage(new NdefRecord[] { record });
-			msgs = new NdefMessage[] { msg };
-		}
-		// TODO : Afficher les informations...
-
-		if (message != null) {
-			Log.d("TAGNFC", "il y a un message stocké");
-			try {
-				writeTag(message, tag);
-			} catch (Exception e) {
-				Log.e("TAGNFC", "erreur dans le writetag");
-			}
-		} else {
-			Log.d("TAGNFC", "pas de message stocké");
-		}
-
 	}
 
-	public NdefMessage createNdefMessage(String text, String mimeType) {
+
+	public NdefMessage createNdefMessage(String text) {
 
 		// Message de type URI
-		NdefMessage msg = new NdefMessage(NdefRecord.createUri(Uri
-				.encode("http://www.mbds-fr.org/" + text)));
+		NdefMessage msg = new NdefMessage(NdefRecord.createUri("http://www.mbds-fr.org/" + text));
 		return msg;
 	}
 
-	public static boolean writeTag(final NdefMessage message, final Tag tag) {
+	public static boolean writeTag(NdefMessage message, Tag tag) {
 		try {
+
+            Log.d(TAG, "debut writeTag");
+            if(message == null){
+                Log.e(TAG, "message null");
+            }
 			int size = message.toByteArray().length;
+
+            Log.d(TAG, "writeTag message = "+message.toString());
+
 			Ndef ndef = Ndef.get(tag);
+
+            Log.d(TAG, "writeTag tag ="+tag.getId());
+
 			if (ndef != null) {
 				ndef.connect();
+                Log.d(TAG, "connected");
 				if (!ndef.isWritable()) {
 					return false;
 				}
 				if (ndef.getMaxSize() < size) {
 					return false;
 				}
+                Log.d(TAG, "pre write");
 				ndef.writeNdefMessage(message);
+                Log.d(TAG, "post write");
 				ndef.close();
+
+                writeMode = false;
 				return true;
 			} else {
+                Log.d(TAG, "Tag non formaté");
 				// Tags qui nécessitent un formatage :
 				NdefFormatable format = NdefFormatable.get(tag);
 				if (format != null) {
@@ -231,17 +242,21 @@ public class TagActivity extends Activity {
 						// ou en verrouillant le tag en écriture :
 						// formatable.formatReadOnly(message);
 						format.close();
+                        writeMode = false;
 						return true;
 					} catch (IOException e) {
 						return false;
 					}
 				} else {
+                    writeMode = false;
 					return false;
 				}
 			}
 		} catch (Exception e) {
-			return false;
+			e.printStackTrace();
 		}
+        writeMode = false;
+        return false;
 	}
 
 	@Override
@@ -257,14 +272,7 @@ public class TagActivity extends Activity {
 		mEdit.setText("");
 	}
 
-	public void share() {
 
-		// récuperation du texte entré par l'utilisateur
-		EditText messageField = (EditText) findViewById(R.id.message);
-		final String texte = messageField.getText().toString();
-		message = createNdefMessage(texte, null);
-		Log.d("TAGNFC", "message stocké : " + texte);
-	}
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {

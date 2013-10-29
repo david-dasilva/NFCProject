@@ -38,7 +38,9 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
-        <activity android:name=".ReaderActivity"/>
+        <activity android:name=".ReaderActivity"
+                  android:parentActivityName="org.mbds.android.tagnfc.TagActivity"
+        />
     </application>
 
 </manifest>
