@@ -58,14 +58,14 @@ public class TagActivity extends Activity {
 
     public void onResume() {
         super.onResume();
-        nfcAdapter.enableForegroundDispatch(this,
-                pendingIntent, null, null); // TODO verifier ça
+        /*nfcAdapter.enableForegroundDispatch(this,
+                pendingIntent, null, null); // TODO verifier ça*/
     }
 
 
     public void onPause() {
         super.onPause();
-        nfcAdapter.disableForegroundDispatch(this);
+        /*nfcAdapter.disableForegroundDispatch(this);*/
     }
 
 
