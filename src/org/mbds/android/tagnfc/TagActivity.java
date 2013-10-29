@@ -29,7 +29,7 @@ public class TagActivity extends Activity {
 
     public static final String TAG = "TAGNFC";
 	public static final String MESSAGE = "I'm a message!";
-	public static final String PREFIX = "http://www.mbds-fr.org";
+	public static final String PREFIX = "http://www.mbds-fr.org/";
     private static boolean writeMode = false;
 
 	NfcAdapter nfcAdapter;
@@ -48,13 +48,10 @@ public class TagActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 
-                writeMode = true;
 
-                EditText messageField = (EditText) findViewById(R.id.message);
-                final String texte = messageField.getText().toString();
-                message = createNdefMessage(texte);
+                share();
 
-                Log.d(TAG, "Click btn Share, message = "+message.toString());
+
 			}
 		});
 
@@ -66,6 +63,23 @@ public class TagActivity extends Activity {
 		//}
 
 	}
+
+
+    private void share(){
+        writeMode = true;
+
+        EditText messageField = (EditText) findViewById(R.id.message);
+        final String texte = messageField.getText().toString();
+
+        if(!texte.isEmpty()){
+            message = createNdefMessage(texte);
+
+            nfcAdapter.setNdefPushMessage(message, this);
+        }
+
+        Log.d(TAG, "Click btn Share, message = "+message.toString());
+    }
+
 
 	@Override
 	public void onResume() {
@@ -85,7 +99,7 @@ public class TagActivity extends Activity {
 			// Si un périphérique NFC est en proximité, le message sera envoyé
 			// en mode passif
 			// (ne fonctionne pas pour un tag passif)
-			nfcAdapter.setNdefPushMessage(message, this);
+			//nfcAdapter.setNdefPushMessage(message, this);
 		}
 
 		try {
@@ -134,6 +148,7 @@ public class TagActivity extends Activity {
             Log.d(TAG, "mode ecriture");
 
             try{
+                //////
                 writeTag(message, tag);
                 writeMode = false;
             } catch(Exception e){
@@ -165,9 +180,10 @@ public class TagActivity extends Activity {
                         byte[] type = record.getType();
 
                         // récupération du message sous forme de string
-                        String message = new String(record.getPayload());
-
-                        message = message.substring(13); // <---- sale
+                        String message = "";//new String(record.getPayload());
+                        Uri uri = record.toUri();
+                        message += uri.toString().replace(PREFIX,"")+" ";
+                        //message = message.substring(13); // <---- sale
 
                         Log.d(TAG, "message = " + message);
 
@@ -195,7 +211,7 @@ public class TagActivity extends Activity {
 	public NdefMessage createNdefMessage(String text) {
 
 		// Message de type URI
-		NdefMessage msg = new NdefMessage(NdefRecord.createUri("http://www.mbds-fr.org/" + text));
+		NdefMessage msg = new NdefMessage(NdefRecord.createUri(PREFIX + text));
 		return msg;
 	}
 
