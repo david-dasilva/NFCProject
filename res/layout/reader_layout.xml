@@ -9,40 +9,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Large Text"
+            android:text="@string/tvmessage"
             android:id="@+id/tvMessage"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
             />
 
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Infos :"
+            android:text="@string/info"
             android:id="@+id/textView"
-            android:layout_marginTop="52dp"
-            android:layout_below="@+id/tvMessage"
-            android:layout_alignParentLeft="true"/>
+            android:layout_marginTop="52dp"/>
 
     <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/textView"
-            android:layout_alignParentLeft="true">
+            android:layout_height="wrap_content">
 
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Id : "
+                android:text="@string/iddpoint"
                 android:id="@+id/textView2"/>
 
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Small Text"
+                android:text="@string/tvid"
                 android:id="@+id/tvId"/>
 
     </LinearLayout>
@@ -54,14 +48,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="technologies : "
+                android:text="@string/technologies"
                 android:id="@+id/textView3"/>
 
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Small Text"
+                android:text="@string/tvtec"
                 android:id="@+id/tvTech"/>
     </LinearLayout>
 
@@ -73,14 +67,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Ecriture possible : "
+                android:text="@string/ecrivable"
                 android:id="@+id/textView4"/>
 
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Small Text"
+                android:text="@string/ecriture"
                 android:id="@+id/tvEcriture"/>
     </LinearLayout>
 
@@ -92,14 +86,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Verrouillable : "
+                android:text="@string/verrouillable"
                 android:id="@+id/textView5"/>
 
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Small Text"
+                android:text="@string/lockable"
                 android:id="@+id/tvLockable"/>
     </LinearLayout>
 
