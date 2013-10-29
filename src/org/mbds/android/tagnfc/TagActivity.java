@@ -55,6 +55,13 @@ public class TagActivity extends FragmentActivity {
 		});
 
 		nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+		
+	     android.app.FragmentManager fm = getFragmentManager();
+	        FragmentTest testDialog = new FragmentTest();
+	        testDialog.setRetainInstance(true);
+	        testDialog.show(fm, "un fragment");
+	 
+		
 	}
 
 
