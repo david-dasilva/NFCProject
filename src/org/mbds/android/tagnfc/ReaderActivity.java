@@ -3,6 +3,8 @@ package org.mbds.android.tagnfc;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.SensorListener;
+import android.hardware.SensorManager;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -10,52 +12,101 @@ import android.widget.TextView;
 /**
  * Created by shepard on 29/10/13.
  */
-public class ReaderActivity extends Activity {
+@SuppressWarnings("deprecation")
+public class ReaderActivity extends Activity implements SensorListener {
 
-    private IntentFilter ndefDetected;
+	private IntentFilter ndefDetected;
 
-    String message = "";
-    String id= "";
-    String technologies = "";
-    String isWritable = "";
-    String isLockable = "";
+	// Gestion du shaker
 
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.reader_layout);
+	private static final int SHAKE_THRESHOLD = 5000;
+	private SensorManager sensorMgr = null;
 
-        Bundle bundle = getIntent().getExtras();
-        message = bundle.getString("message");
-        id = bundle.getString("id");
-        technologies = bundle.getString(technologies);
-        isWritable = bundle.getString("isWritable");
-        isLockable = bundle.getString("canMakeReadOnly");
+	long lastUpdate = 0;
+	float last_x = 0;
+	float last_y = 0;
+	float last_z = 0;
 
+	String message = "";
+	String id = "";
+	String technologies = "";
+	String isWritable = "";
+	String isLockable = "";
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.reader_layout);
 
-        if(!message.isEmpty()){
+		sensorMgr = (SensorManager) getSystemService(SENSOR_SERVICE);
+		sensorMgr.registerListener(this, SensorManager.SENSOR_ACCELEROMETER,
+				SensorManager.SENSOR_DELAY_GAME);
 
-            // Affichage du message dans le textView
-            TextView tvMessage = (TextView) findViewById(R.id.tvMessage);
-            tvMessage.setText(message);
+		Bundle bundle = getIntent().getExtras();
+		message = bundle.getString("message");
+		id = bundle.getString("id");
+		technologies = bundle.getString(technologies);
+		isWritable = bundle.getString("isWritable");
+		isLockable = bundle.getString("canMakeReadOnly");
 
-            TextView tvId = (TextView) findViewById(R.id.tvId);
-            tvId.setText(id);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 
-            TextView tvTech = (TextView) findViewById(R.id.tvTech);
-            tvTech.setText(technologies);
+		if (!message.isEmpty()) {
 
-            TextView tvEcriture = (TextView) findViewById(R.id.tvEcriture);
-            tvEcriture.setText(isWritable);
+			// Affichage du message dans le textView
+			TextView tvMessage = (TextView) findViewById(R.id.tvMessage);
+			tvMessage.setText(message);
 
-            TextView tvLockable = (TextView) findViewById(R.id.tvLockable);
-            tvLockable.setText(isLockable);
-        }
+			TextView tvId = (TextView) findViewById(R.id.tvId);
+			tvId.setText(id);
 
-    }
+			TextView tvTech = (TextView) findViewById(R.id.tvTech);
+			tvTech.setText(technologies);
 
+			TextView tvEcriture = (TextView) findViewById(R.id.tvEcriture);
+			tvEcriture.setText(isWritable);
 
+			TextView tvLockable = (TextView) findViewById(R.id.tvLockable);
+			tvLockable.setText(isLockable);
+		}
+
+	}
+
+	@SuppressWarnings("deprecation")
+	public void onSensorChanged(int sensor, float[] values) {
+		if (sensor == SensorManager.SENSOR_ACCELEROMETER) {
+			long curTime = System.currentTimeMillis();
+			// only allow one update every 100ms.
+			if (lastUpdate == 0)
+				lastUpdate = curTime;
+			if ((curTime - lastUpdate) > 100) {
+				long diffTime = (curTime - lastUpdate);
+				lastUpdate = curTime;
+
+				float x = values[SensorManager.DATA_X];
+				float y = values[SensorManager.DATA_Y];
+				float z = values[SensorManager.DATA_Z];
+				if (last_x == 0 && last_y == 0 && last_z == 0) {
+					last_x = x;
+					last_y = y;
+					last_z = z;
+				}
+				float speed = Math.abs(x + y + z - last_x - last_y - last_z)
+						/ diffTime * 10000;
+
+				if (speed > SHAKE_THRESHOLD) {
+					finish();
+				}
+				last_x = x;
+				last_y = y;
+				last_z = z;
+			}
+		}
+	}
+
+	@Override
+	public void onAccuracyChanged(int sensor, int accuracy) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
-
