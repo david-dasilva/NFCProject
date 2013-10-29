@@ -198,7 +198,7 @@ public class TagActivity extends Activity {
                         readIntent.putExtras(bundle);
                         readIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         Log.d(TAG,"starting activity ReaderActivity");
-                        startActivity(readIntent);
+                        startActivityForResult(readIntent,0);
                         finish();
 
                     }
@@ -282,8 +282,13 @@ public class TagActivity extends Activity {
 		return true;
 	}
 
-	public void Clear(View view) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        Log.d(TAG, "retour a l'activité principale");
+        clear(null);
+    }
 
+	public void clear(View view) {
+        Log.d(TAG, "clear field");
 		EditText mEdit = (EditText) findViewById(R.id.message);
 		mEdit.setText("");
 	}
