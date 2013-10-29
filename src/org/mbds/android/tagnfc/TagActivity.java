@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.widget.Toast;
 
 
 import java.io.IOException;
@@ -146,6 +147,8 @@ public class TagActivity extends FragmentActivity {
                 //////
                 writeTag(message, tag);
                 writeMode = false;
+                Toast toast = Toast.makeText(getApplicationContext(), R.string.tag_success, Toast.LENGTH_SHORT);
+                toast.show();
             } catch(Exception e){
                 e.printStackTrace();
             }
@@ -268,6 +271,7 @@ public class TagActivity extends FragmentActivity {
 			e.printStackTrace();
 		}
         writeMode = false;
+
         return false;
 	}
 
