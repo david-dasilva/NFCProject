@@ -284,6 +284,16 @@ public class TagActivity extends Activity {
 		EditText mEdit = (EditText) findViewById(R.id.message);
 		mEdit.setText("");
 	}
+	
+	public void resettag(View view)
+	{
+        writeMode = true;
+        message = createNdefMessage("");
+        nfcAdapter.setNdefPushMessage(message, this);
+        Log.d(TAG, "Click btn ResetTag, message = "+message.toString());
+        NfcDialogFragment dialog = new NfcDialogFragment();
+		
+	}
 
 
 	
