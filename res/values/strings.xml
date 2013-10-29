@@ -12,11 +12,10 @@
     <string name="ecrivable">Ecriture possible : </string>
     <string name="lockable">Small Text </string>
     <string name="ecriture">Small Text </string>
-    <string name="technologies">technologies : </string>
     <string name="tvtec">Small Text </string>
     <string name="iddpoint">Id : </string>
     <string name="tvid">Small Text</string>
-    <string name="info">Infos : </string>
+    <string name="info">Information about Tag</string>
     <string name="tvmessage">Large Text</string>
     <string name="share">Share</string>
     <string name="resettag">Reset Tag</string>

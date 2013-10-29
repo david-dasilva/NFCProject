@@ -58,8 +58,6 @@ public class ReaderActivity extends Activity implements SensorListener {
 			TextView tvId = (TextView) findViewById(R.id.tvId);
 			tvId.setText(id);
 
-			TextView tvTech = (TextView) findViewById(R.id.tvTech);
-			tvTech.setText(technologies);
 
 			TextView tvEcriture = (TextView) findViewById(R.id.tvEcriture);
 			tvEcriture.setText(isWritable);
