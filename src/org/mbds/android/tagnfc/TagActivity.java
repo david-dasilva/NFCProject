@@ -22,16 +22,14 @@ import android.widget.EditText;
 import android.os.Parcelable;
 
 import java.io.IOException;
+import java.io.Reader;
 
 public class TagActivity extends Activity {
 
-	public static final String TAG = "NFCReader";
-
-	public static final int REQUEST_CODE = 1000;
 
 	public static final String MESSAGE = "I'm a message!";
-
 	public static final String PREFIX = "http://www.mbds-fr.org";
+    private static boolean writeMode = false;
 
 	NfcAdapter nfcAdapter;
 	PendingIntent pendingIntent;
@@ -65,18 +63,18 @@ public class TagActivity extends Activity {
 	public void onResume() {
 		super.onResume();
 		if (message != null) {
-			// CrÈer le message ‡ Ècrire
+			// Cr√©er le message √† √©crire
 
 			NfcAdapter nfcAdapter = NfcAdapter
 					.getDefaultAdapter(getApplicationContext());
-			// Utilisation de la mÈthode crÈe prÈcÈdemment :
-			// On insËre le domaine (URL) pour que le tag soit dÈtectÈ
-			// par cette appli en prioritÈ (cf. manifeste)=> dans notre
+			// Utilisation de la m√©thode cr√©e pr√©c√©demment :
+			// On ins√©re le domaine (URL) pour que le tag soit d√©tect√©
+			// par cette appli en priorit√© (cf. manifeste)=> dans notre
 			// exemple, nous n'utiliserons pas le type mime...
 			// msg = createNdefMessage(PREFIX+message, "text/plain");
-			// Passer le message Ndef, ainsi que líactivitÈ en cours ‡
-			// líadaptateur :
-			// Si un pÈriphÈrique NFC est en proximitÈ, le message sera envoyÈ
+			// Passer le message Ndef, ainsi que l'activit√© en cours √†
+			// l'adaptateur :
+			// Si un p√©riph√©rique NFC est en proximit√©, le message sera envoy√©
 			// en mode passif
 			// (ne fonctionne pas pour un tag passif)
 			nfcAdapter.setNdefPushMessage(message, this);
@@ -127,37 +125,56 @@ public class TagActivity extends Activity {
 		boolean isWritable = ndef.isWritable();
 		boolean canMakeReadOnly = ndef.canMakeReadOnly();
 
-		// R√©cup√©ration des messages
-		Parcelable[] rawMsgs = intent
-				.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-		NdefMessage[] msgs;
-		if (rawMsgs != null) {
-			msgs = new NdefMessage[rawMsgs.length];
-			for (int i = 0; i < rawMsgs.length; i++) {
-				msgs[i] = (NdefMessage) rawMsgs[i];
-				NdefRecord record = msgs[i].getRecords()[i];
-				byte[] idRec = record.getId();
-				short tnf = record.getTnf();
-				byte[] type = record.getType();
-				String message = new String(record.getPayload());
-				// Utiliser ?
-				message = message.substring(13); // <---- sale
 
-				Log.d("TAGNFC", "message = " + message);
-				EditText txt = (EditText) findViewById(R.id.message);
-				txt.setText(message);
+        if(writeMode){
+            // Mode √©criture
+            // TODO : appeller l'activit√© d'√©criture ici
+        } else {
+            // Mode lecture
 
-				Log.d("TAGNFC", "Tag trouv√©!");
-				Log.d("TAGNFC", "Test2");
+            // R√©cup√©ration des messages
+            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            NdefMessage[] msgs;
 
-				// Lancer le navigateur si type URI ?
-				/*
-				 * if (Arrays.equals(type, NdefRecord.RTD_URI)) { Uri uri =
-				 * record.toUri(); Intent in = new Intent(Intent.ACTION_VIEW);
-				 * in.setData(uri); startActivity(in); }
-				 */
-			}
-		} else {
+            if (rawMsgs != null) {
+
+                // Il y a des messages!
+
+                msgs = new NdefMessage[rawMsgs.length];
+                for (int i = 0; i < rawMsgs.length; i++) {
+                    msgs[i] = (NdefMessage) rawMsgs[i];
+                    NdefRecord record = msgs[i].getRecords()[i];
+                    byte[] idRec = record.getId();
+                    short tnf = record.getTnf();
+                    byte[] type = record.getType();
+
+                    // r√©cup√©ration du message sous forme de string
+                    String message = new String(record.getPayload());
+
+                    message = message.substring(13); // <---- sale
+
+                    Log.d("TAGNFC", "message = " + message);
+
+                    // TODO : Appeler l'activit√© Reader et lui passer le message en parametres
+
+
+                    Intent readIntent = new Intent(getBaseContext(), ReaderActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("message", message);
+                    readIntent.putExtras(bundle);
+
+                    startActivity(readIntent);
+
+
+                }
+            }
+
+        }
+
+
+
+
+		 else {
 			// Tag de type inonnu
 			byte[] empty = new byte[] {};
 			NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty,
