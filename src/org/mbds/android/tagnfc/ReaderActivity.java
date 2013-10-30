@@ -7,6 +7,7 @@ import android.hardware.SensorListener;
 import android.hardware.SensorManager;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.widget.TextView;
 
 /**
@@ -35,6 +36,8 @@ public class ReaderActivity extends Activity implements SensorListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.reader_layout);
+
+        TagActivity.FromReader = true;
 
 		sensorMgr = (SensorManager) getSystemService(SENSOR_SERVICE);
 		sensorMgr.registerListener(this, SensorManager.SENSOR_ACCELEROMETER,
@@ -110,5 +113,15 @@ public class ReaderActivity extends Activity implements SensorListener {
 		// TODO Auto-generated method stub
 		
 	}
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            setResult(RESULT_CANCELED);
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
 }

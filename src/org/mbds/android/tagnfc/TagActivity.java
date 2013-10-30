@@ -31,6 +31,9 @@ public class TagActivity extends FragmentActivity {
     private static boolean writeMode = false;
 	public static NdefMessage message = null;
     private static NfcDialogFragment dialog;
+
+    public static boolean FromReader = false;
+
     NfcAdapter nfcAdapter;
     IntentFilter ndefDetected;
 
@@ -80,6 +83,12 @@ public class TagActivity extends FragmentActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
+        if(FromReader)
+        {
+            clear();
+            FromReader= false;
+        }
+
 		if (message != null) {
 			// Créer le message à écrire
 
@@ -219,7 +228,8 @@ public class TagActivity extends FragmentActivity {
 				ndef.writeNdefMessage(message);
 
                 // On cache le dialogue demandant a l'utilisateur d'approcher un Tag
-                dialog.dismiss();
+                if(dialog!=null)
+                    dialog.dismiss();
 				ndef.close();
 
                 writeMode = false;
@@ -261,6 +271,11 @@ public class TagActivity extends FragmentActivity {
      * @param data
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(FromReader)
+        {
+            clear();
+            FromReader= false;
+        }
         Log.d(TAG, "retour a l'activité principale");
         clear();
     }
@@ -273,6 +288,10 @@ public class TagActivity extends FragmentActivity {
         Log.d(TAG, "clear field");
 		EditText mEdit = (EditText) findViewById(R.id.message);
 		mEdit.setText("");
+
+        dialog = (NfcDialogFragment) getFragmentManager().findFragmentByTag("un fragment");
+        if(dialog!=null)
+            dialog.dismiss();
 	}
 
 
