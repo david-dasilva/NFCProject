@@ -1,5 +1,9 @@
 package org.mbds.android.tagnfc;
 
+import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.content.Intent;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -59,6 +63,34 @@ public class TagNfc{
         String idtxt = "";
         idtxt =  bytesToHex(id);
         return idtxt;
+	}
+	
+	public static final Pattern VALID_EMAIL_ADDRESS_REGEX = 
+		    Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
+		public static boolean validate(String emailStr) {
+		        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX .matcher(emailStr);
+		        return matcher.find();
+		}
+	
+	public String getTypeMessage()
+	{
+		String message = getMessage();
+		if(validate(message))
+			return "email";
+		if(message.matches("[0-9]{10}"))
+			return "phone";
+		try{
+			URL url ;
+			url = new URL(message);
+			return "url";
+		
+		}
+		catch(Exception e )
+		{
+		}
+		return "unknow";
+		
 	}
 
 

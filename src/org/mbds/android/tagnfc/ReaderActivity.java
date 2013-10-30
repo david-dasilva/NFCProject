@@ -32,6 +32,7 @@ public class ReaderActivity extends Activity implements SensorListener {
 	String technologies = "";
 	String isWritable = "";
 	String isLockable = "";
+	String typeMessage = "";
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,6 +50,7 @@ public class ReaderActivity extends Activity implements SensorListener {
 		technologies = bundle.getString(technologies);
 		isWritable = bundle.getString("isWritable");
 		isLockable = bundle.getString("canMakeReadOnly");
+		typeMessage = bundle.getString("typeMessage");
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -57,7 +59,10 @@ public class ReaderActivity extends Activity implements SensorListener {
 			// Affichage du message dans le textView
 			TextView tvMessage = (TextView) findViewById(R.id.tvMessage);
 			tvMessage.setText(message);
-
+			
+			TextView typeMessage = (TextView) findViewById(R.id.textmessage);
+			typeMessage.setText(this.typeMessage);
+			
 			TextView tvId = (TextView) findViewById(R.id.tvId);
 			tvId.setText(id);
 
