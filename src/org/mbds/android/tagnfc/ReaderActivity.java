@@ -5,15 +5,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.SensorListener;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 
 /**
- * Activité affichant les messages stocké dans le tag NFC
- * Les informations utiles sont transmises par l'activité mère via le Bundle
- * Il est possible revenir en arrière en secouant le téléphone
+ * Activité affichant les messages stocké dans le tag NFC Les informations
+ * utiles sont transmises par l'activité mère via le Bundle Il est possible
+ * revenir en arrière en secouant le téléphone
  */
 @SuppressWarnings("deprecation")
 public class ReaderActivity extends Activity implements SensorListener {
@@ -32,13 +37,13 @@ public class ReaderActivity extends Activity implements SensorListener {
 	String technologies = "";
 	String isWritable = "";
 	String isLockable = "";
-	String typeMessage = "";
+	public static String typeMessage = "";
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.reader_layout);
 
-        TagActivity.FromReader = true;
+		TagActivity.FromReader = true;
 
 		sensorMgr = (SensorManager) getSystemService(SENSOR_SERVICE);
 		sensorMgr.registerListener(this, SensorManager.SENSOR_ACCELEROMETER,
@@ -59,13 +64,57 @@ public class ReaderActivity extends Activity implements SensorListener {
 			// Affichage du message dans le textView
 			TextView tvMessage = (TextView) findViewById(R.id.tvMessage);
 			tvMessage.setText(message);
-			
+
 			TextView typeMessage = (TextView) findViewById(R.id.textmessage);
 			typeMessage.setText(this.typeMessage);
+
+			Log.d("TAGNFC",this.typeMessage);
+			Button bt = (Button) findViewById(R.id.btsearch);
+			if (this.typeMessage.contains("url"))
+				bt.setText("Go to website !");
+			else if (this.typeMessage.contains("phone"))
+				bt.setText("Call number ! ");
+			else if (this.typeMessage.contains("email")) {
+				bt.setText("Send email now !");
+			}
+			else
+				bt.setText("Search message on web !");
 			
+			bt.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+
+					if (ReaderActivity.typeMessage.contains("url")){
+						Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(message));
+						startActivity(browserIntent);
+					}
+					else if (ReaderActivity.typeMessage.contains("phone")){
+						Intent callIntent = new Intent(Intent.ACTION_CALL);
+						callIntent.setData(Uri.parse("tel:"+message));
+						startActivity(callIntent);
+						
+					}
+					else if (ReaderActivity.typeMessage.contains("email")) {
+						Intent i = new Intent(Intent.ACTION_SEND);  
+						//i.setType("text/plain");
+						i.setType("message/rfc822") ; // use from live device
+						i.putExtra(Intent.EXTRA_EMAIL, new String[]{message});  
+						startActivity(Intent.createChooser(i, "Select email application."));
+					}
+					else
+					{
+						String url = "http://www.google.com/#q="+message;
+						Intent i = new Intent(Intent.ACTION_VIEW);
+						i.setData(Uri.parse(url));
+						startActivity(i);
+						
+					}
+				}
+			});
+			
+
 			TextView tvId = (TextView) findViewById(R.id.tvId);
 			tvId.setText(id);
-
 
 			TextView tvEcriture = (TextView) findViewById(R.id.tvEcriture);
 			tvEcriture.setText(isWritable);
@@ -76,11 +125,13 @@ public class ReaderActivity extends Activity implements SensorListener {
 
 	}
 
-    /**
-     * Ferme l'activité et reviens à l'activité principale lorsque l'on secoue le téléphone
-     * @param sensor
-     * @param values
-     */
+	/**
+	 * Ferme l'activité et reviens à l'activité principale lorsque l'on
+	 * secoue le téléphone
+	 * 
+	 * @param sensor
+	 * @param values
+	 */
 	@SuppressWarnings("deprecation")
 	public void onSensorChanged(int sensor, float[] values) {
 		if (sensor == SensorManager.SENSOR_ACCELEROMETER) {
@@ -116,17 +167,17 @@ public class ReaderActivity extends Activity implements SensorListener {
 	@Override
 	public void onAccuracyChanged(int sensor, int accuracy) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            setResult(RESULT_CANCELED);
-            finish();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			setResult(RESULT_CANCELED);
+			finish();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 
 }

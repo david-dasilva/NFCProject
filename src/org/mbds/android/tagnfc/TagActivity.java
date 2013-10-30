@@ -175,7 +175,7 @@ public class TagActivity extends FragmentActivity {
                         bundle.putString("technologies", tagnfc.getTechnologies());
                         bundle.putString("isWritable", tagnfc.isWritable());
                         bundle.putString("canMakeReadOnly", tagnfc.isCanMakeReadOnly());
-                        bundle.putString("typeMessage", tagnfc.getTypeMessage());
+                        bundle.putString("typeMessage", tagnfc.getTypeMessage(message));
 
                         readIntent.putExtras(bundle);
                         readIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);

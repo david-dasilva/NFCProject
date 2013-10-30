@@ -65,6 +65,7 @@
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:background="@drawable/btn_cab_done_focused_example"
+                android:id="@+id/btsearch"
                 android:text=" CLIC" />
         </TableRow>
 
